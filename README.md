@@ -17,9 +17,9 @@ This does a few things:
 The `attn_shape` parameter can be `brick` or `tile`. The `brick` mode alternates between these four tilings, with bricks of size `attn_slice_x*2, attn_slice_y` for horizontal and `attn_slice_x, attn_slice_y*2` for vertical. I chose these tilings because it ensures that the information can eventually trickle throughout the whole image.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="fff.png">
-  <source media="(prefers-color-scheme: light)" srcset="fff.png">
-  <img alt="Brick tiling patterns" src="fff.png">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Phylliida/StableDiffusionLargeResPatch/raw/main/totes4.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/Phylliida/StableDiffusionLargeResPatch/raw/main/totes4.png">
+  <img alt="Brick tiling patterns" src="https://github.com/Phylliida/StableDiffusionLargeResPatch/raw/main/totes4.png">
 </picture>
 
 The `tile` mode is in progress and not recommended, right now it just does the trivial thing of making `attn_slice_x, attn_slice_y` patches. I'm going to make it offset them every other input, which should help with some artifacts.
