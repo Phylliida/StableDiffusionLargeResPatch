@@ -256,14 +256,6 @@ def viewBricks(width, height, attn_slice_x, attn_slice_y, outPath):
   PIL.Image.fromarray(res).save(outPath)
       
       
-def getBricksf(width, height, ind, attn_slice_x, attn_slice_y):
-  for (x_start, y_start, x_end, y_end) in getBricksHelper(width, height, ind, attn_slice_x, attn_slice_y):
-    if ind % 2 == 0:
-      yield (x_start, y_start, x_end, y_end)
-    else:
-      yield (width-x_end, height-y_end, width-x_start, height-y_start)
-      
-      
 # todo: interlacing squares (grak idea)
       
 def getBricks(width, height, ind, attn_slice_x, attn_slice_y):
@@ -374,12 +366,13 @@ def getTiles(width, height, attn_slice_x, attn_slice_y):
       yield(x_start, y_start, x_end, y_end) 
   
 class LargeResPatch(object):
-  def __init__(self, pipe, width, height, attn_slice_x=64, attn_slice_y=64, attn_shape='brick', padding_mode='constant', vae_chunk_size_x=64, vae_chunk_size_y=64):
+  def __init__(self, pipe, width, height, attn_slice_x=64, attn_slice_y=64, attn_shape='brick', ff_chunk_size=16384//4, padding_mode='constant', vae_chunk_size_x=64, vae_chunk_size_y=64):
     self.width = width
     self.height = height
     self.attn_slice_x = attn_slice_x
     self.attn_slice_y = attn_slice_y
     self.attn_shape = attn_shape # can be 'brick' or 'tile'
+    self.ff_chunk_size = ff_chunk_size
     self.padding_mode = padding_mode
     self.vae_chunk_size_x = vae_chunk_size_x
     self.vae_chunk_size_y = vae_chunk_size_y
@@ -392,7 +385,7 @@ class LargeResPatch(object):
     
     
   def __enter__(self):
-    width, height, attn_slice_x, attn_slice_y, attn_shape, padding_mode, vae_chunk_size_x, vae_chunk_size_y = self.width, self.height, self.attn_slice_x, self.attn_slice_y, self.attn_shape, self.padding_mode, self.vae_chunk_size_x, self.vae_chunk_size_y
+    width, height, attn_slice_x, attn_slice_y, attn_shape, ff_chunk_size, padding_mode, vae_chunk_size_x, vae_chunk_size_y = self.width, self.height, self.attn_slice_x, self.attn_slice_y, self.attn_shape, self.ff_chunk_size, self.padding_mode, self.vae_chunk_size_x, self.vae_chunk_size_y
     
      # modified from https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/master/modules/sd_hijack_optimizations.py
     def split_cross_attention_forward(self, x, context=None, mask=None):
@@ -561,7 +554,7 @@ class LargeResPatch(object):
         linear_output = self.ff(norm_3_out)
       else:
         d1, d2, d3 = map(int, norm_3_out.size())
-        chunkSize = min(16384//4, d2)
+        chunkSize = min(ff_chunk_size, d2)
         linear_output = torch.zeros(norm_3_out.size(), dtype=norm_3_out.dtype, device=norm_3_out.device)
         for c in range(0, d2, chunkSize):
           max_c = min(c+chunkSize, d2)
