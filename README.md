@@ -1,6 +1,8 @@
 # StableDiffusionLargeResPatch
 Patch for stable diffusion that let you run it at large resolutions (up to 2992x2992 on 8GB VRAM)
 
+Here's [some example images generated using this](https://twitter.com/phylliida/status/1586116435797213184)
+
 Using this with diffusers is simple:
 
 ```
