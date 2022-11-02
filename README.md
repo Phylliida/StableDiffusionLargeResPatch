@@ -22,6 +22,8 @@ The `attn_shape` parameter can be `brick` or `tile`. The `brick` mode alternates
   <img alt="Brick tiling patterns" src="https://github.com/Phylliida/StableDiffusionLargeResPatch/raw/main/totes4.png">
 </picture>
 
+You can call `largeResPatch.viewBricks(width=512, height=512, attn_slice_x=64, attn_slice_y=64, outPath='example.png')` (for example) to see what the brick tilings will look like for given parameters.
+
 The `tile` mode is in progress and not recommended, right now it just does the trivial thing of making `attn_slice_x, attn_slice_y` patches. I'm going to make it offset them every other input, which should help with some artifacts.
 
 Note, width and height need to be divisible by 16 (TODO: fix this).
